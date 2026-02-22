@@ -225,6 +225,9 @@ def handle_async_analysis(detail: Dict[str, Any]) -> Dict[str, Any]:
         if "priority_level" in ai_result:
             update_expr += ", priority_level = :pri"
             attr_values[":pri"] = ai_result["priority_level"]
+        if "growth_plan" in ai_result:
+            update_expr += ", growth_plan = :gp"
+            attr_values[":gp"] = ai_result["growth_plan"]
         
         table.update_item(
             Key={"feedbackId": feedback_id},
@@ -535,19 +538,20 @@ def call_bedrock_analysis(message: str) -> Dict[str, Any]:
         f"1. sentiment: Classify as 'positive', 'negative', or 'neutral' based on overall tone\n"
         f"2. topics: Extract 3-8 key topics/themes (e.g., 'communication skills', 'technical expertise', "
         f"'leadership', 'time management', 'collaboration', 'problem-solving'). Use specific, actionable terms.\n"
-        f"3. summary: Write a 2-3 sentence professional summary that:\n"
-        f"   - Captures the essence of the feedback\n"
-        f"   - Highlights key strengths or concerns\n"
-        f"   - Is suitable for HR review\n"
-        f"4. strengths: List 2-4 specific strengths mentioned (if any), or empty array if none\n"
-        f"5. improvements: List 2-4 specific areas for improvement mentioned (if any), or empty array if none\n"
-        f"6. competency_areas: Identify 1-3 competency categories from: Technical Skills, "
-        f"Communication, Leadership, Collaboration, Problem-Solving, Time Management, Innovation, "
-        f"Customer Focus, Adaptability, Quality Focus. Return as array.\n"
-        f"7. priority_level: 'high', 'medium', or 'low' based on urgency/importance of the feedback\n\n"
+        f"3. summary: Write a 2-3 sentence professional summary that captures the essence of the feedback.\n"
+        f"4. strengths: List 2-4 specific strengths mentioned, or empty array if none\n"
+        f"5. improvements: List 2-4 specific areas for improvement mentioned, or empty array if none\n"
+        f"6. competency_areas: Identify 1-3 categories from: Technical Skills, Communication, Leadership, "
+        f"Collaboration, Problem-Solving, Time Management, Adaptability, Quality Focus.\n"
+        f"7. priority_level: 'high', 'medium', or 'low' based on importance/urgency\n"
+        f"8. growth_plan: A personalized development roadmap containing:\n"
+        f"   - immediate_actions: List 2-3 specific things to do in the next 30 days\n"
+        f"   - short_term_goals: List 2-3 goals for the next 1-3 months\n"
+        f"   - long_term_development: List 1-2 career development goals for 6-12 months\n\n"
         f"Respond ONLY with valid JSON, no markdown, no explanation:\n"
         f'{{"sentiment": "...", "topics": [...], "summary": "...", "strengths": [...], '
-        f'"improvements": [...], "competency_areas": [...], "priority_level": "..."}}'
+        f'"improvements": [...], "competency_areas": [...], "priority_level": "...", '
+        f'"growth_plan": {{"immediate_actions": [...], "short_term_goals": [...], "long_term_development": [...]}}}}'
     )
 
     body = {
@@ -615,6 +619,11 @@ def call_comprehend_analysis(message: str) -> Dict[str, Any]:
         "improvements": [],
         "competency_areas": [],
         "priority_level": "medium",
+        "growth_plan": {
+            "immediate_actions": [],
+            "short_term_goals": [],
+            "long_term_development": []
+        }
     }
 
 
@@ -687,6 +696,11 @@ def _safe_parse_ai_response(raw: str) -> Dict[str, Any]:
         "improvements": [],
         "competency_areas": [],
         "priority_level": "medium",
+        "growth_plan": {
+            "immediate_actions": [],
+            "short_term_goals": [],
+            "long_term_development": []
+        }
     }
 
 
@@ -722,6 +736,14 @@ def _normalize_ai_result(parsed: Dict[str, Any]) -> Dict[str, Any]:
     if priority_level not in {"high", "medium", "low"}:
         priority_level = "medium"
     
+    gp = parsed.get("growth_plan", {})
+    if not isinstance(gp, dict): gp = {}
+    growth_plan = {
+        "immediate_actions": [str(x).strip() for x in gp.get("immediate_actions", []) if x][:3],
+        "short_term_goals": [str(x).strip() for x in gp.get("short_term_goals", []) if x][:3],
+        "long_term_development": [str(x).strip() for x in gp.get("long_term_development", []) if x][:2],
+    }
+
     return {
         "sentiment": sentiment,
         "topics": topics,
@@ -730,6 +752,7 @@ def _normalize_ai_result(parsed: Dict[str, Any]) -> Dict[str, Any]:
         "improvements": improvements,
         "competency_areas": competency_areas,
         "priority_level": priority_level,
+        "growth_plan": growth_plan,
     }
 
 
