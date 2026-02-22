@@ -23,8 +23,6 @@ import Login from "./Login";
 import RequireAuth from "./RequireAuth";
 import { isAuthenticated, isHr, signOut } from "./auth";
 
-import bgImage from "./assets/bg.png";
-
 const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -45,105 +43,120 @@ const App: React.FC = () => {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
+    <Box sx={{ minHeight: "100vh", background: "#f5f5f5", display: "flex", flexDirection: "column" }}>
 
-      {/* Background */}
-      <Box
-        sx={{
-          position: "fixed",
-          inset: 0,
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          filter: "blur(10px)",
-          transform: "scale(1.1)",
-          zIndex: -2
-        }}
-      />
+      {/* Navbar */}
+      {authed && (
+        <AppBar
+          position="static"
+          elevation={1}
+          sx={{
+            background: "#fff",
+            borderBottom: "1px solid #e0e0e0",
+          }}
+        >
+          <Toolbar>
+            {/* Logo mark */}
+            <Box sx={{
+              width: 32, height: 32, borderRadius: "8px",
+              background: "#111", display: "flex", alignItems: "center",
+              justifyContent: "center", mr: 1.5, flexShrink: 0,
+            }}>
+              <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: "14px", fontFamily: "monospace" }}>W</Typography>
+            </Box>
 
-      <Box
-        sx={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(15, 23, 42, 0.75)",
-          zIndex: -1
-        }}
-      />
+            <Typography
+              variant="h6"
+              sx={{
+                flexGrow: 1,
+                fontWeight: 700,
+                color: "#111",
+                letterSpacing: "-0.02em",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              WorkPulse
+            </Typography>
 
-      <Box
-        sx={{
-          position: "relative",
-          zIndex: 1,
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column"
-        }}
-      >
-        {/* Navbar */}
-        {authed && (
-          <AppBar
-            position="static"
-            elevation={0}
-            sx={{
-              backdropFilter: "blur(20px)",
-              background: "rgba(255,255,255,0.05)"
-            }}
-          >
-            <Toolbar>
-              <Typography
-                variant="h6"
-                sx={{
-                  flexGrow: 1,
-                  fontWeight: 600,
-                  background:
-                    "linear-gradient(90deg, #8b5cf6, #ec4899)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent"
-                }}
-              >
-                Smart Talent Insight Hub
-              </Typography>
-
-              {/* Employee: Feedback + My Reviews */}
-              {!hr && (
-                <>
-                  <Button
-                    component={Link}
-                    to="/"
-                    sx={{ color: "#fff", mr: 2 }}
-                  >
-                    Feedback
-                  </Button>
-                  <Button
-                    component={Link}
-                    to="/my-reviews"
-                    sx={{ color: "#fff", mr: 2 }}
-                  >
-                    My Reviews
-                  </Button>
-                </>
-              )}
-
-              {/* HR: Dashboard */}
-              {hr && (
+            {/* Employee nav */}
+            {!hr && (
+              <>
                 <Button
                   component={Link}
-                  to="/insights"
-                  sx={{ color: "#fff", mr: 2 }}
+                  to="/"
+                  sx={{
+                    color: location.pathname === "/" ? "#111" : "#666",
+                    fontWeight: location.pathname === "/" ? 700 : 400,
+                    mr: 1,
+                    textTransform: "none",
+                    fontSize: "14px",
+                    borderBottom: location.pathname === "/" ? "2px solid #111" : "2px solid transparent",
+                    borderRadius: 0,
+                    pb: "2px",
+                  }}
                 >
-                  Dashboard
+                  Submit Feedback
                 </Button>
-              )}
+                <Button
+                  component={Link}
+                  to="/my-reviews"
+                  sx={{
+                    color: location.pathname === "/my-reviews" ? "#111" : "#666",
+                    fontWeight: location.pathname === "/my-reviews" ? 700 : 400,
+                    mr: 1,
+                    textTransform: "none",
+                    fontSize: "14px",
+                    borderBottom: location.pathname === "/my-reviews" ? "2px solid #111" : "2px solid transparent",
+                    borderRadius: 0,
+                    pb: "2px",
+                  }}
+                >
+                  My Reviews
+                </Button>
+              </>
+            )}
 
-              <Button onClick={handleLogout} sx={{ color: "#fff" }}>
-                Logout
+            {/* HR nav */}
+            {hr && (
+              <Button
+                component={Link}
+                to="/insights"
+                sx={{
+                  color: "#111",
+                  fontWeight: 700,
+                  mr: 1,
+                  textTransform: "none",
+                  fontSize: "14px",
+                  borderBottom: "2px solid #111",
+                  borderRadius: 0,
+                  pb: "2px",
+                }}
+              >
+                HR Dashboard
               </Button>
-            </Toolbar>
-          </AppBar>
-        )}
+            )}
 
-        {/* Pages */}
-        <Container sx={{ flexGrow: 1, py: 6 }}>
+            <Button
+              onClick={handleLogout}
+              variant="outlined"
+              size="small"
+              sx={{
+                color: "#111",
+                borderColor: "#ccc",
+                textTransform: "none",
+                fontSize: "13px",
+                "&:hover": { borderColor: "#111", background: "#f5f5f5" },
+              }}
+            >
+              Sign out
+            </Button>
+          </Toolbar>
+        </AppBar>
+      )}
+
+      {/* Pages */}
+      <Box sx={{ flexGrow: 1 }}>
+        <Container sx={{ py: 5 }}>
           <Routes>
             <Route path="/login" element={<Login />} />
 
@@ -183,23 +196,24 @@ const App: React.FC = () => {
             />
           </Routes>
         </Container>
-
-        {/* Footer */}
-        {authed && (
-          <Box
-            component="footer"
-            sx={{
-              py: 3,
-              textAlign: "center",
-              background: "rgba(255,255,255,0.03)"
-            }}
-          >
-            <Typography sx={{ color: "rgba(255,255,255,0.6)" }}>
-              Powered by AWS (Comprehend / Bedrock) & AWS Serverless
-            </Typography>
-          </Box>
-        )}
       </Box>
+
+      {/* Footer */}
+      {authed && (
+        <Box
+          component="footer"
+          sx={{
+            py: 2.5,
+            textAlign: "center",
+            background: "#fff",
+            borderTop: "1px solid #e0e0e0",
+          }}
+        >
+          <Typography sx={{ color: "#999", fontSize: "12px" }}>
+            WorkPulse · Powered by AWS Bedrock &amp; Serverless
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };
