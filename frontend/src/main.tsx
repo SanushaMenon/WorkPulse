@@ -6,17 +6,33 @@ import App from "./App";
 
 const theme = createTheme({
   palette: {
-    mode: "dark",
-    primary: { main: "#8b5cf6" },
-    secondary: { main: "#ec4899" },
+    mode: "light",
+    primary: { main: "#111111" },
+    secondary: { main: "#555555" },
     background: {
-      default: "#0f172a",
-      paper: "rgba(255,255,255,0.05)"
-    }
+      default: "#f5f5f5",
+      paper: "#ffffff",
+    },
+    text: {
+      primary: "#111111",
+      secondary: "#666666",
+    },
   },
   typography: {
-    fontFamily: "Inter, sans-serif"
-  }
+    fontFamily: "'Inter', sans-serif",
+  },
+  shape: {
+    borderRadius: 10,
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: "#f5f5f5",
+        },
+      },
+    },
+  },
 });
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
