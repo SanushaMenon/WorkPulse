@@ -505,6 +505,12 @@ resource "aws_api_gateway_resource" "insights_resource" {
   path_part   = "insights"
 }
 
+resource "aws_api_gateway_resource" "my_reviews_resource" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "my-reviews"
+}
+
 resource "aws_api_gateway_method" "feedback_post" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.feedback_resource.id
@@ -531,6 +537,21 @@ resource "aws_api_gateway_method" "insights_get" {
 resource "aws_api_gateway_method" "insights_options" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.insights_resource.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method" "my_reviews_get" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.my_reviews_resource.id
+  http_method   = "GET"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.cognito.id
+}
+
+resource "aws_api_gateway_method" "my_reviews_options" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.my_reviews_resource.id
   http_method   = "OPTIONS"
   authorization = "NONE"
 }
@@ -571,6 +592,24 @@ resource "aws_api_gateway_integration" "insights_options" {
   uri                     = aws_lambda_function.feedback_api.invoke_arn
 }
 
+resource "aws_api_gateway_integration" "my_reviews_get" {
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource.my_reviews_resource.id
+  http_method             = aws_api_gateway_method.my_reviews_get.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.feedback_api.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "my_reviews_options" {
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource.my_reviews_resource.id
+  http_method             = aws_api_gateway_method.my_reviews_options.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.feedback_api.invoke_arn
+}
+
 resource "aws_lambda_permission" "apigw_lambda" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
@@ -588,6 +627,8 @@ resource "aws_api_gateway_deployment" "deployment" {
       aws_api_gateway_integration.feedback_options,
       aws_api_gateway_integration.insights_get,
       aws_api_gateway_integration.insights_options,
+      aws_api_gateway_integration.my_reviews_get,
+      aws_api_gateway_integration.my_reviews_options,
     ]))
   }
 
@@ -600,6 +641,8 @@ resource "aws_api_gateway_deployment" "deployment" {
     aws_api_gateway_integration.feedback_options,
     aws_api_gateway_integration.insights_get,
     aws_api_gateway_integration.insights_options,
+    aws_api_gateway_integration.my_reviews_get,
+    aws_api_gateway_integration.my_reviews_options,
   ]
 }
 
