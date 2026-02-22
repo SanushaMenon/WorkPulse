@@ -5,20 +5,20 @@ import { fetchMyReviews, MyReview } from "../api";
 /* ── Colour palette (classic B&W with premium depth) ─────────────────────────────── */
 const C = {
     surface: "#ffffff",
-    bg: "#fafafa",
-    border: "rgba(0,0,0,0.08)",
-    text: "#0a0a0a",
-    muted: "#5c5c5c",
-    muted2: "#e0e0e0",
-    pos: "#10b981",
-    neu: "#6b7280",
-    neg: "#ef4444",
+    bg: "#F4F1E1",           // Cream
+    border: "#597E9420",     // 12% opacity slate
+    text: "#597E94",         // Slate Blue
+    muted: "#597E94cc",      // 80% opacity slate
+    muted2: "#597E9466",     // 40% opacity slate
+    pos: "#4CA695",          // Teal for positive
+    neu: "#597E94",          // Slate for neutral
+    neg: "#EC8C8C",          // Coral Pink for negative
 };
 
 const SENT: Record<string, { color: string; bg: string; label: string; dot: string; shadow: string }> = {
-    positive: { color: C.pos, bg: "rgba(16, 185, 129, 0.08)", label: "Positive", dot: C.pos, shadow: "rgba(16, 185, 129, 0.2)" },
-    neutral: { color: C.neu, bg: "rgba(107, 114, 128, 0.08)", label: "Neutral", dot: C.neu, shadow: "rgba(107, 114, 128, 0.2)" },
-    negative: { color: C.neg, bg: "rgba(239, 68, 68, 0.08)", label: "Negative", dot: C.neg, shadow: "rgba(239, 68, 68, 0.2)" },
+    positive: { color: C.pos, bg: "#4CA6951A", label: "Positive", dot: C.pos, shadow: "#4CA69533" }, // 10% and 20% opacity teal
+    neutral: { color: C.neu, bg: "#597E941A", label: "Neutral", dot: C.neu, shadow: "#597E9433" },  // 10% and 20% opacity slate
+    negative: { color: C.neg, bg: "#EC8C8C1A", label: "Negative", dot: C.neg, shadow: "#EC8C8C33" }, // 10% and 20% opacity coral
 };
 
 function getInitials(name: string) {
@@ -89,10 +89,11 @@ function ReviewModal({ review, onClose }: { review: MyReview; onClose: () => voi
             }}
         >
             <Box sx={{
-                background: "#fff", borderRadius: "24px",
+                background: "rgba(255, 255, 255, 0.95)", backdropFilter: "blur(24px)",
+                borderRadius: "24px",
                 width: "100%", maxWidth: 680,
                 maxHeight: "88vh", overflowY: "auto",
-                boxShadow: "0 32px 100px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05) inset",
+                boxShadow: "0 32px 100px rgba(89, 126, 148, 0.15), 0 0 0 1px rgba(0,0,0,0.05) inset",
                 animation: "scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
             }}>
 
@@ -108,7 +109,7 @@ function ReviewModal({ review, onClose }: { review: MyReview; onClose: () => voi
                     <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
                         <Box sx={{
                             width: 52, height: 52, borderRadius: "14px",
-                            background: "linear-gradient(135deg, #111 0%, #333 100%)",
+                            background: "linear-gradient(135deg, #4CA695 0%, #597E94 100%)",
                             display: "flex", alignItems: "center", justifyContent: "center",
                             fontSize: "16px", fontWeight: 700, color: "#fff",
                             letterSpacing: "1px", flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
@@ -242,14 +243,14 @@ function ReviewModal({ review, onClose }: { review: MyReview; onClose: () => voi
                             <RoadmapSection
                                 title="Short-Term Goals (1–3 months)"
                                 items={gp.short_term_goals ?? []}
-                                dotColor="#2563eb"
-                                bg="#eff6ff"
+                                dotColor="#597E94"
+                                bg="#597E940a"
                             />
                             <RoadmapSection
                                 title="Long-Term Development (3–12 months)"
                                 items={gp.long_term_development ?? []}
-                                dotColor="#7c3aed"
-                                bg="#f5f3ff"
+                                dotColor="#EC8C8C"
+                                bg="#EC8C8C0a"
                             />
                         </Box>
                     )}
@@ -283,23 +284,24 @@ function ReviewCard({ review, idx, onOpen }: { review: MyReview; idx: number; on
         <Box
             onClick={onOpen}
             sx={{
-                border: `1px solid ${C.border}`, borderRadius: "16px",
-                background: C.surface, display: "flex", alignItems: "center",
-                gap: "16px", p: "16px 20px", cursor: "pointer",
+                border: `1px solid rgba(89, 126, 148, 0.12)`, borderRadius: "20px", overflow: "hidden",
+                background: "rgba(255, 255, 255, 0.9)", backdropFilter: "blur(8px)",
+                display: "flex", alignItems: "center", gap: "16px", p: "16px 20px",
+                cursor: "pointer",
                 animation: `slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.05}s both`,
                 transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.01)",
+                boxShadow: "0 4px 16px rgba(89, 126, 148, 0.04)",
                 "&:hover": {
-                    boxShadow: "0 12px 32px rgba(0,0,0,0.08)",
-                    borderColor: "rgba(0,0,0,0.15)",
-                    transform: "translateY(-4px)"
+                    boxShadow: "0 12px 32px rgba(76, 166, 149, 0.12)",
+                    borderColor: "rgba(76, 166, 149, 0.3)",
+                    transform: "translateY(-3px)",
                 },
             }}
         >
             {/* Avatar */}
             <Box sx={{
                 width: 44, height: 44, borderRadius: "12px", flexShrink: 0,
-                background: "linear-gradient(135deg, #111 0%, #444 100%)", display: "flex", alignItems: "center",
+                background: "linear-gradient(135deg, #4CA695 0%, #597E94 100%)", display: "flex", alignItems: "center",
                 justifyContent: "center", fontSize: "14px", fontWeight: 700, color: "#fff", letterSpacing: "1px"
             }}>
                 {getInitials(review.employeeName || "?")}
@@ -403,7 +405,7 @@ const MyReviewsPage: React.FC = () => {
                     </Typography>
                     <Typography variant="h3" sx={{
                         fontWeight: 800, mb: "8px", letterSpacing: "-0.03em",
-                        background: "linear-gradient(135deg, #111 0%, #444 100%)",
+                        background: "linear-gradient(135deg, #597E94 0%, #4CA695 100%)",
                         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
                     }}>
                         Feedback &amp; Growth Roadmap
@@ -425,10 +427,13 @@ const MyReviewsPage: React.FC = () => {
 
                 {data && !loading && (
                     <Box sx={{
-                        background: C.surface, border: `1px solid ${C.border}`,
-                        borderRadius: "20px", p: "28px",
+                        background: "rgba(255, 255, 255, 0.95)", backdropFilter: "blur(12px)",
+                        border: `1px solid rgba(89, 126, 148, 0.12)`,
+                        borderRadius: "24px", p: "28px",
                         animation: "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both",
-                        boxShadow: "0 4px 24px rgba(0,0,0,0.02)"
+                        boxShadow: "0 12px 40px rgba(89, 126, 148, 0.05), 0 2px 8px rgba(0,0,0,0.02)",
+                        transition: "all 0.3s ease",
+                        "&:hover": { boxShadow: "0 20px 50px rgba(89, 126, 148, 0.08)" }
                     }}>
                         <Typography sx={{ fontSize: "12px", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700, color: C.muted, mb: "14px" }}>
                             Reviews about you ({reviews.length})

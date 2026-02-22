@@ -13,16 +13,16 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElemen
 
 /* ── Colour palette (classic B&W with premium depth) ───────────────────────────────────────── */
 const C = {
-  bg: "#fafafa",           // slightly brighter off-white
+  bg: "#F4F1E1",           // Cream
   surface: "#ffffff",      // pure white cards
-  border: "rgba(0,0,0,0.08)", // very subtle border
-  text: "#0a0a0a",         // almost black
-  muted: "#5c5c5c",        // softer grey for secondary text
-  muted2: "#e0e0e0",       // skeleton/outline proxy
-  accent: "#111111",       // primary accent = black
-  pos: "#10b981",          // modern minty green
-  neu: "#6b7280",          // sleek slate neutral
-  neg: "#ef4444",          // vibrant coral red
+  border: "#597E9420",     // 12% opacity slate
+  text: "#597E94",         // Slate Blue
+  muted: "#597E94cc",      // 80% opacity slate
+  muted2: "#597E9466",     // 40% opacity slate
+  accent: "#4CA695",       // Teal 
+  pos: "#4CA695",          // Teal for positive
+  neu: "#597E94",          // Slate for neutral
+  neg: "#EC8C8C",          // Coral Pink for negative
   amber: "#f59e0b",
   emerald: "#059669",
   sky: "#2563eb",
@@ -41,10 +41,10 @@ interface EmployeeReview {
 interface EnrichedInsights extends InsightsResponse { reviews?: EmployeeReview[]; }
 
 const SENT: Record<string, { color: string; bg: string; label: string; dot: string; shadow: string }> = {
-  positive: { color: C.pos, bg: "rgba(16, 185, 129, 0.08)", label: "Positive", dot: C.pos, shadow: "rgba(16, 185, 129, 0.2)" },
-  neutral: { color: C.neu, bg: "rgba(107, 114, 128, 0.08)", label: "Neutral", dot: C.neu, shadow: "rgba(107, 114, 128, 0.2)" },
-  negative: { color: C.neg, bg: "rgba(239, 68, 68, 0.08)", label: "Negative", dot: C.neg, shadow: "rgba(239, 68, 68, 0.2)" },
-  mixed: { color: C.muted, bg: "rgba(92, 92, 92, 0.08)", label: "Mixed", dot: C.muted, shadow: "rgba(92, 92, 92, 0.2)" },
+  positive: { color: C.pos, bg: "#4CA6951A", label: "Positive", dot: C.pos, shadow: "#4CA69533" }, // 10% and 20% opacity teal
+  neutral: { color: C.neu, bg: "#597E941A", label: "Neutral", dot: C.neu, shadow: "#597E9433" },  // 10% and 20% opacity slate
+  negative: { color: C.neg, bg: "#EC8C8C1A", label: "Negative", dot: C.neg, shadow: "#EC8C8C33" }, // 10% and 20% opacity coral
+  mixed: { color: C.muted, bg: "#597E941A", label: "Mixed", dot: C.muted, shadow: "#597E9433" },
 };
 
 /* ── Count-up hook ───────────────────────────────────────────────────────── */
@@ -103,20 +103,21 @@ function StatCard({ label, value, suffix, delay }: { label: string; value: numbe
   const count = useCountUp(value);
   return (
     <Box sx={{
-      background: C.surface, border: `1px solid ${C.border}`, borderRadius: "16px",
-      p: "20px", animation: `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${delay} both`,
+      background: "rgba(255, 255, 255, 0.95)", backdropFilter: "blur(8px)",
+      border: `1px solid rgba(89, 126, 148, 0.12)`, borderRadius: "20px",
+      p: "24px", animation: `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${delay} both`,
       transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-      boxShadow: "0 4px 20px rgba(0,0,0,0.02)",
+      boxShadow: "0 8px 32px rgba(89, 126, 148, 0.06), 0 2px 8px rgba(0,0,0,0.02)",
       "&:hover": {
-        boxShadow: "0 12px 32px rgba(0,0,0,0.08)",
+        boxShadow: "0 16px 48px rgba(76, 166, 149, 0.12)",
         transform: "translateY(-4px)",
-        borderColor: "rgba(0,0,0,0.15)"
+        borderColor: "rgba(76, 166, 149, 0.3)"
       },
     }}>
       <Typography sx={{
         fontSize: "2.2rem", fontWeight: 800, color: C.text, lineHeight: 1,
         fontFamily: "'Inter', sans-serif", letterSpacing: "-0.03em",
-        background: "linear-gradient(135deg, #0a0a0a 0%, #404040 100%)",
+        background: "linear-gradient(135deg, #597E94 0%, #4CA695 100%)",
         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
       }}>
         {count}{suffix || ""}
@@ -132,12 +133,13 @@ function StatCard({ label, value, suffix, delay }: { label: string; value: numbe
 function Panel({ title, children, minH, delay = "0.1s" }: { title: string; children: React.ReactNode; minH?: number; delay?: string }) {
   return (
     <Box sx={{
-      background: C.surface, border: `1px solid ${C.border}`,
-      borderRadius: "20px", p: "24px", minHeight: minH,
+      background: "rgba(255, 255, 255, 0.95)", backdropFilter: "blur(12px)",
+      border: `1px solid rgba(89, 126, 148, 0.12)`,
+      borderRadius: "24px", p: "28px", minHeight: minH,
       animation: `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${delay} both`,
-      boxShadow: "0 4px 24px rgba(0,0,0,0.02)",
+      boxShadow: "0 12px 40px rgba(89, 126, 148, 0.05), 0 2px 8px rgba(0,0,0,0.02)",
       transition: "all 0.3s ease",
-      "&:hover": { boxShadow: "0 8px 32px rgba(0,0,0,0.04)" }
+      "&:hover": { boxShadow: "0 20px 50px rgba(89, 126, 148, 0.08)" }
     }}>
       <Typography sx={{
         fontSize: "12px", letterSpacing: "0.12em", textTransform: "uppercase",
@@ -198,7 +200,7 @@ function ReviewModal({ review, onClose }: { review: EmployeeReview; onClose: () 
           <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <Box sx={{
               width: 52, height: 52, borderRadius: "14px",
-              background: "linear-gradient(135deg, #111 0%, #333 100%)",
+              background: "linear-gradient(135deg, #4CA695 0%, #597E94 100%)",
               display: "flex", alignItems: "center",
               justifyContent: "center", fontSize: "16px", fontWeight: 700,
               color: "#fff", letterSpacing: "1px", flexShrink: 0,
@@ -287,14 +289,14 @@ function ReviewModal({ review, onClose }: { review: EmployeeReview; onClose: () 
               <RoadmapSection
                 title="Short-Term Goals (1–3 months)"
                 items={gp.short_term_goals ?? []}
-                dotColor="#2563eb"
-                bg="#eff6ff"
+                dotColor="#597E94"
+                bg="#597E940a" // 4% slate
               />
               <RoadmapSection
                 title="Long-Term Development (3–12 months)"
                 items={gp.long_term_development ?? []}
-                dotColor="#7c3aed"
-                bg="#f5f3ff"
+                dotColor="#EC8C8C"
+                bg="#EC8C8C0a" // 4% coral
               />
             </Box>
           )}
@@ -332,24 +334,24 @@ function EmployeeCard({ review, idx, onOpen }: { review: EmployeeReview; idx: nu
     <Box
       onClick={onOpen}
       sx={{
-        border: `1px solid ${C.border}`, borderRadius: "16px", overflow: "hidden",
-        background: C.surface,
+        border: `1px solid rgba(89, 126, 148, 0.12)`, borderRadius: "20px", overflow: "hidden",
+        background: "rgba(255, 255, 255, 0.9)", backdropFilter: "blur(8px)",
         display: "flex", alignItems: "center", gap: "16px", p: "16px 20px",
         cursor: "pointer",
         animation: `slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.05}s both`,
         transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.01)",
+        boxShadow: "0 4px 16px rgba(89, 126, 148, 0.04)",
         "&:hover": {
-          boxShadow: "0 12px 32px rgba(0,0,0,0.08)",
-          borderColor: "rgba(0,0,0,0.15)",
-          transform: "translateY(-4px)",
+          boxShadow: "0 12px 32px rgba(76, 166, 149, 0.12)",
+          borderColor: "rgba(76, 166, 149, 0.3)",
+          transform: "translateY(-3px)",
         },
       }}
     >
       {/* Avatar */}
       <Box sx={{
         width: 44, height: 44, borderRadius: "12px", flexShrink: 0,
-        background: "linear-gradient(135deg, #111 0%, #444 100%)", display: "flex", alignItems: "center",
+        background: "linear-gradient(135deg, #4CA695 0%, #597E94 100%)", display: "flex", alignItems: "center",
         justifyContent: "center", fontSize: "14px", fontWeight: 700,
         color: "#fff", letterSpacing: "1px",
       }}>
@@ -600,8 +602,8 @@ const InsightsPage: React.FC = () => {
       <svg width="0" height="0">
         <defs>
           <linearGradient id="posGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={C.pos} stopOpacity={0.4} />
-            <stop offset="100%" stopColor={C.pos} stopOpacity={0.0} />
+            <stop offset="0%" stopColor="#4CA695" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="#4CA695" stopOpacity={0.0} />
           </linearGradient>
         </defs>
       </svg>
@@ -748,7 +750,7 @@ const InsightsPage: React.FC = () => {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                   sx={{
                     width: "100%", mb: "16px", display: "block",
-                    background: "#fafafa", border: `1px solid ${C.border}`,
+                    background: "#F4F1E1", border: `1px solid ${C.border}`,
                     borderRadius: "9px", p: "10px 16px",
                     color: C.text, fontSize: "13px", outline: "none",
                     transition: "border-color 0.2s",

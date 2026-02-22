@@ -43,26 +43,32 @@ const App: React.FC = () => {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", background: "#f5f5f5", display: "flex", flexDirection: "column" }}>
+    <Box sx={{ minHeight: "100vh", background: "radial-gradient(circle at 15% 50%, #F4F1E1, #e8eceb)", display: "flex", flexDirection: "column" }}>
 
       {/* Navbar */}
       {authed && (
         <AppBar
-          position="static"
-          elevation={1}
+          position="sticky"
+          elevation={0}
           sx={{
-            background: "#fff",
-            borderBottom: "1px solid #e0e0e0",
+            top: 0,
+            background: "rgba(255, 255, 255, 0.8)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            borderBottom: "1px solid rgba(89, 126, 148, 0.1)",
+            zIndex: 1100,
           }}
         >
           <Toolbar>
             {/* Logo mark */}
             <Box sx={{
-              width: 32, height: 32, borderRadius: "8px",
-              background: "#111", display: "flex", alignItems: "center",
+              width: 36, height: 36, borderRadius: "10px",
+              background: "linear-gradient(135deg, #4CA695 0%, #3A8576 100%)",
+              display: "flex", alignItems: "center",
               justifyContent: "center", mr: 1.5, flexShrink: 0,
+              boxShadow: "0 4px 12px rgba(76, 166, 149, 0.25)"
             }}>
-              <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: "14px", fontFamily: "monospace" }}>W</Typography>
+              <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: "16px", fontFamily: "monospace", letterSpacing: "1px" }}>W</Typography>
             </Box>
 
             <Typography
@@ -70,7 +76,7 @@ const App: React.FC = () => {
               sx={{
                 flexGrow: 1,
                 fontWeight: 700,
-                color: "#111",
+                color: "#597E94",
                 letterSpacing: "-0.02em",
                 fontFamily: "'Inter', sans-serif",
               }}
@@ -85,12 +91,12 @@ const App: React.FC = () => {
                   component={Link}
                   to="/"
                   sx={{
-                    color: location.pathname === "/" ? "#111" : "#666",
-                    fontWeight: location.pathname === "/" ? 700 : 400,
+                    color: location.pathname === "/" ? "#4CA695" : "#597E94",
+                    fontWeight: location.pathname === "/" ? 700 : 500,
                     mr: 1,
                     textTransform: "none",
                     fontSize: "14px",
-                    borderBottom: location.pathname === "/" ? "2px solid #111" : "2px solid transparent",
+                    borderBottom: location.pathname === "/" ? "2px solid #4CA695" : "2px solid transparent",
                     borderRadius: 0,
                     pb: "2px",
                   }}
@@ -101,12 +107,12 @@ const App: React.FC = () => {
                   component={Link}
                   to="/my-reviews"
                   sx={{
-                    color: location.pathname === "/my-reviews" ? "#111" : "#666",
-                    fontWeight: location.pathname === "/my-reviews" ? 700 : 400,
+                    color: location.pathname === "/my-reviews" ? "#4CA695" : "#597E94",
+                    fontWeight: location.pathname === "/my-reviews" ? 700 : 500,
                     mr: 1,
                     textTransform: "none",
                     fontSize: "14px",
-                    borderBottom: location.pathname === "/my-reviews" ? "2px solid #111" : "2px solid transparent",
+                    borderBottom: location.pathname === "/my-reviews" ? "2px solid #4CA695" : "2px solid transparent",
                     borderRadius: 0,
                     pb: "2px",
                   }}
@@ -122,12 +128,12 @@ const App: React.FC = () => {
                 component={Link}
                 to="/insights"
                 sx={{
-                  color: "#111",
+                  color: "#4CA695",
                   fontWeight: 700,
                   mr: 1,
                   textTransform: "none",
                   fontSize: "14px",
-                  borderBottom: "2px solid #111",
+                  borderBottom: "2px solid #4CA695",
                   borderRadius: 0,
                   pb: "2px",
                 }}
@@ -141,11 +147,20 @@ const App: React.FC = () => {
               variant="outlined"
               size="small"
               sx={{
-                color: "#111",
-                borderColor: "#ccc",
+                color: "#597E94",
+                borderColor: "rgba(89, 126, 148, 0.3)",
+                borderRadius: "8px",
                 textTransform: "none",
                 fontSize: "13px",
-                "&:hover": { borderColor: "#111", background: "#f5f5f5" },
+                fontWeight: 600,
+                px: 2,
+                transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                "&:hover": {
+                  borderColor: "#597E94",
+                  background: "#597E940a",
+                  transform: "translateY(-1px)",
+                  boxShadow: "0 2px 8px rgba(89, 126, 148, 0.1)",
+                },
               }}
             >
               Sign out

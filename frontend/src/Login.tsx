@@ -47,32 +47,34 @@ const Login: React.FC = () => {
     >
       <Box
         sx={{
-          width: 380,
-          background: "#fff",
-          border: "1px solid #e0e0e0",
-          borderRadius: "16px",
-          p: "40px 36px",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
+          width: 400,
+          background: "rgba(255, 255, 255, 0.9)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          border: "1px solid rgba(255,255,255,0.4)",
+          borderRadius: "24px",
+          p: "48px 40px",
+          boxShadow: "0 24px 48px rgba(89, 126, 148, 0.08), 0 4px 12px rgba(0,0,0,0.03)",
         }}
       >
         {/* Logo */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: "32px" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "12px", mb: "36px" }}>
           <Box sx={{
-            width: 38, height: 38, borderRadius: "10px",
-            background: "#111", display: "flex", alignItems: "center",
-            justifyContent: "center",
+            width: 42, height: 42, borderRadius: "12px",
+            background: "linear-gradient(135deg, #4CA695 0%, #3A8576 100%)", display: "flex", alignItems: "center",
+            justifyContent: "center", boxShadow: "0 6px 16px rgba(76, 166, 149, 0.25)"
           }}>
-            <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: "16px", fontFamily: "monospace" }}>W</Typography>
+            <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: "20px", fontFamily: "monospace", letterSpacing: "1px" }}>W</Typography>
           </Box>
-          <Typography sx={{ fontWeight: 700, fontSize: "18px", color: "#111", letterSpacing: "-0.02em" }}>
+          <Typography sx={{ fontWeight: 800, fontSize: "20px", color: "#597E94", letterSpacing: "-0.03em" }}>
             WorkPulse
           </Typography>
         </Box>
 
-        <Typography sx={{ fontWeight: 700, fontSize: "22px", color: "#111", mb: "6px" }}>
-          Sign in
+        <Typography sx={{ fontWeight: 800, fontSize: "28px", color: "#597E94", mb: "8px", letterSpacing: "-0.04em", lineHeight: 1.2 }}>
+          Welcome back
         </Typography>
-        <Typography sx={{ fontSize: "13px", color: "#888", mb: "28px" }}>
+        <Typography sx={{ fontSize: "14px", color: "#597E9499", mb: "32px", fontWeight: 500 }}>
           Enter your credentials to access your workspace.
         </Typography>
 
@@ -96,11 +98,15 @@ const Login: React.FC = () => {
           onKeyDown={handleKeyDown}
           sx={{
             "& .MuiOutlinedInput-root": {
-              borderRadius: "10px",
-              "&:hover fieldset": { borderColor: "#111" },
-              "&.Mui-focused fieldset": { borderColor: "#111" },
+              borderRadius: "12px",
+              background: "#fafafa",
+              transition: "all 0.2s ease",
+              "&:hover": { background: "#fff" },
+              "&.Mui-focused": { background: "#fff", boxShadow: "0 0 0 3px rgba(76, 166, 149, 0.15)" },
+              "&:hover fieldset": { borderColor: "#4CA695" },
+              "&.Mui-focused fieldset": { borderColor: "#4CA695" },
             },
-            "& label.Mui-focused": { color: "#111" },
+            "& label.Mui-focused": { color: "#4CA695", fontWeight: 600 },
           }}
         />
 
@@ -115,11 +121,15 @@ const Login: React.FC = () => {
           onKeyDown={handleKeyDown}
           sx={{
             "& .MuiOutlinedInput-root": {
-              borderRadius: "10px",
-              "&:hover fieldset": { borderColor: "#111" },
-              "&.Mui-focused fieldset": { borderColor: "#111" },
+              borderRadius: "12px",
+              background: "#fafafa",
+              transition: "all 0.2s ease",
+              "&:hover": { background: "#fff" },
+              "&.Mui-focused": { background: "#fff", boxShadow: "0 0 0 3px rgba(76, 166, 149, 0.15)" },
+              "&:hover fieldset": { borderColor: "#4CA695" },
+              "&.Mui-focused fieldset": { borderColor: "#4CA695" },
             },
-            "& label.Mui-focused": { color: "#111" },
+            "& label.Mui-focused": { color: "#4CA695", fontWeight: 600 },
           }}
         />
 
@@ -130,16 +140,22 @@ const Login: React.FC = () => {
           onClick={handleLogin}
           disabled={loading}
           sx={{
-            mt: 3,
-            py: 1.5,
-            background: "#111",
-            borderRadius: "10px",
+            mt: 4,
+            py: 1.6,
+            background: "linear-gradient(135deg, #4CA695 0%, #3A8576 100%)",
+            borderRadius: "12px",
             textTransform: "none",
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: "15px",
-            letterSpacing: "0",
-            "&:hover": { background: "#333" },
-            "&.Mui-disabled": { background: "#ccc", color: "#fff" },
+            letterSpacing: "0.5px",
+            boxShadow: "0 8px 20px rgba(76, 166, 149, 0.25)",
+            transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+            "&:hover": {
+              background: "linear-gradient(135deg, #3A8576 0%, #2A6E60 100%)",
+              transform: "translateY(-2px)",
+              boxShadow: "0 12px 24px rgba(76, 166, 149, 0.35)",
+            },
+            "&.Mui-disabled": { background: "#ccc", color: "#fff", boxShadow: "none", transform: "none" },
           }}
         >
           {loading ? "Signing in…" : "Sign in"}
