@@ -416,6 +416,7 @@ def handle_get_insights(event: Dict[str, Any]) -> Dict[str, Any]:
                 "sentiment": sentiment,
                 "summary": item.get("summary", ""),
                 "topics": item.get("topics", []),
+                "growth_plan": item.get("growth_plan", {}),
                 "timestamp": ts[:10] if ts else "",
             }
             reviews.append(review)

@@ -52,6 +52,11 @@ export interface InsightsResponse {
     sentiment: string;
     summary: string;
     topics: string[];
+    growth_plan?: {
+      immediate_actions?: string[];
+      short_term_goals?: string[];
+      long_term_development?: string[];
+    };
     timestamp: string;
   }>;
   topTopics?: Array<{ topic: string; count: number }>;

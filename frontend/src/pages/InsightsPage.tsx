@@ -11,35 +11,40 @@ import { fetchInsights, InsightsResponse } from "../api";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Tooltip, Legend, Filler);
 
-/* ── Colour palette (classic B&W) ───────────────────────────────────────── */
+/* ── Colour palette (classic B&W with premium depth) ───────────────────────────────────────── */
 const C = {
-  bg: "#f5f5f5",
-  surface: "#ffffff",
-  border: "#e0e0e0",
-  text: "#111111",
-  muted: "#666666",
-  muted2: "#cccccc",
-  accent: "#111111",   // primary accent = black
-  pos: "#2d6a4f",   // dark green for positive
-  neu: "#555555",   // grey for neutral
-  neg: "#b91c1c",   // dark red for negative
-  amber: "#92400e",
-  emerald: "#14532d",
-  sky: "#1e3a5f",
+  bg: "#fafafa",           // slightly brighter off-white
+  surface: "#ffffff",      // pure white cards
+  border: "rgba(0,0,0,0.08)", // very subtle border
+  text: "#0a0a0a",         // almost black
+  muted: "#5c5c5c",        // softer grey for secondary text
+  muted2: "#e0e0e0",       // skeleton/outline proxy
+  accent: "#111111",       // primary accent = black
+  pos: "#10b981",          // modern minty green
+  neu: "#6b7280",          // sleek slate neutral
+  neg: "#ef4444",          // vibrant coral red
+  amber: "#f59e0b",
+  emerald: "#059669",
+  sky: "#2563eb",
 };
 
 interface EmployeeReview {
   employeeName: string; department: string; rating: number;
   sentiment: string; summary: string; reviewPeriod: string; timestamp: string;
   topics: string[];
+  growth_plan?: {
+    immediate_actions?: string[];
+    short_term_goals?: string[];
+    long_term_development?: string[];
+  };
 }
 interface EnrichedInsights extends InsightsResponse { reviews?: EmployeeReview[]; }
 
-const SENT: Record<string, { color: string; bg: string; label: string; dot: string }> = {
-  positive: { color: C.pos, bg: "#f0fdf4", label: "Positive", dot: "#16a34a" },
-  neutral: { color: C.neu, bg: "#f5f5f5", label: "Neutral", dot: "#888888" },
-  negative: { color: C.neg, bg: "#fef2f2", label: "Negative", dot: "#dc2626" },
-  mixed: { color: C.muted, bg: "#fafafa", label: "Mixed", dot: "#888888" },
+const SENT: Record<string, { color: string; bg: string; label: string; dot: string; shadow: string }> = {
+  positive: { color: C.pos, bg: "rgba(16, 185, 129, 0.08)", label: "Positive", dot: C.pos, shadow: "rgba(16, 185, 129, 0.2)" },
+  neutral: { color: C.neu, bg: "rgba(107, 114, 128, 0.08)", label: "Neutral", dot: C.neu, shadow: "rgba(107, 114, 128, 0.2)" },
+  negative: { color: C.neg, bg: "rgba(239, 68, 68, 0.08)", label: "Negative", dot: C.neg, shadow: "rgba(239, 68, 68, 0.2)" },
+  mixed: { color: C.muted, bg: "rgba(92, 92, 92, 0.08)", label: "Mixed", dot: C.muted, shadow: "rgba(92, 92, 92, 0.2)" },
 };
 
 /* ── Count-up hook ───────────────────────────────────────────────────────── */
@@ -61,20 +66,62 @@ function getInitials(name: string) {
   return name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
 }
 
+/* ── Roadmap section inside modal ────────────────────────────────────────── */
+function RoadmapSection({
+  title, items, dotColor, bg,
+}: { title: string; items: string[]; dotColor: string; bg: string }) {
+  if (!items || items.length === 0) return null;
+  return (
+    <Box sx={{ mb: "20px" }}>
+      <Typography sx={{
+        fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase",
+        color: C.muted, mb: "10px", fontWeight: 700,
+      }}>
+        {title}
+      </Typography>
+      <Stack spacing={1}>
+        {items.map((item, i) => (
+          <Box key={i} sx={{
+            display: "flex", alignItems: "flex-start", gap: "10px",
+            p: "10px 14px", background: bg, borderRadius: "8px",
+            border: `1px solid ${dotColor}20`,
+          }}>
+            <Box sx={{
+              width: 6, height: 6, borderRadius: "50%", background: dotColor,
+              flexShrink: 0, mt: "6px",
+            }} />
+            <Typography sx={{ fontSize: "13px", lineHeight: 1.7, color: C.text }}>{item}</Typography>
+          </Box>
+        ))}
+      </Stack>
+    </Box>
+  );
+}
+
 /* ── Stat Card ───────────────────────────────────────────────────────────── */
 function StatCard({ label, value, suffix, delay }: { label: string; value: number; suffix?: string; delay: string }) {
   const count = useCountUp(value);
   return (
     <Box sx={{
-      background: C.surface, border: `1px solid ${C.border}`, borderRadius: "12px",
-      p: "20px", animation: `slideUp 0.5s ease ${delay} both`,
-      transition: "box-shadow 0.2s",
-      "&:hover": { boxShadow: "0 4px 16px rgba(0,0,0,0.08)" },
+      background: C.surface, border: `1px solid ${C.border}`, borderRadius: "16px",
+      p: "20px", animation: `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${delay} both`,
+      transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+      boxShadow: "0 4px 20px rgba(0,0,0,0.02)",
+      "&:hover": {
+        boxShadow: "0 12px 32px rgba(0,0,0,0.08)",
+        transform: "translateY(-4px)",
+        borderColor: "rgba(0,0,0,0.15)"
+      },
     }}>
-      <Typography sx={{ fontSize: "2rem", fontWeight: 800, color: C.text, lineHeight: 1, fontFamily: "monospace" }}>
+      <Typography sx={{
+        fontSize: "2.2rem", fontWeight: 800, color: C.text, lineHeight: 1,
+        fontFamily: "'Inter', sans-serif", letterSpacing: "-0.03em",
+        background: "linear-gradient(135deg, #0a0a0a 0%, #404040 100%)",
+        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
+      }}>
         {count}{suffix || ""}
       </Typography>
-      <Typography sx={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted, mt: "6px" }}>
+      <Typography sx={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, mt: "8px", fontWeight: 600 }}>
         {label}
       </Typography>
     </Box>
@@ -86,16 +133,19 @@ function Panel({ title, children, minH, delay = "0.1s" }: { title: string; child
   return (
     <Box sx={{
       background: C.surface, border: `1px solid ${C.border}`,
-      borderRadius: "14px", p: "24px", minHeight: minH,
-      animation: `slideUp 0.5s ease ${delay} both`,
+      borderRadius: "20px", p: "24px", minHeight: minH,
+      animation: `slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${delay} both`,
+      boxShadow: "0 4px 24px rgba(0,0,0,0.02)",
+      transition: "all 0.3s ease",
+      "&:hover": { boxShadow: "0 8px 32px rgba(0,0,0,0.04)" }
     }}>
       <Typography sx={{
-        fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase",
-        fontWeight: 700, color: C.muted, mb: "12px",
+        fontSize: "12px", letterSpacing: "0.12em", textTransform: "uppercase",
+        fontWeight: 700, color: C.muted, mb: "14px",
       }}>
         {title}
       </Typography>
-      <Box sx={{ height: "1px", background: C.border, mb: "20px" }} />
+      <Box sx={{ height: "1px", background: "linear-gradient(90deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0) 100%)", mb: "20px" }} />
       {children}
     </Box>
   );
@@ -115,34 +165,44 @@ function ReviewModal({ review, onClose }: { review: EmployeeReview; onClose: () 
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
+  const gp = review.growth_plan || {};
+  const hasGrowthPlan = (
+    (gp.immediate_actions?.length ?? 0) +
+    (gp.short_term_goals?.length ?? 0) +
+    (gp.long_term_development?.length ?? 0)
+  ) > 0;
+
   return (
     <Box
       onClick={handleBackdrop}
       sx={{
         position: "fixed", inset: 0, zIndex: 9999,
-        background: "rgba(0,0,0,0.45)",
+        background: "rgba(0,0,0,0.3)", backdropFilter: "blur(6px)",
         display: "flex", alignItems: "center", justifyContent: "center",
         p: "24px",
-        animation: "fadeIn 0.18s ease",
+        animation: "fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
       }}
     >
       <Box sx={{
-        background: "#fff", borderRadius: "18px", width: "100%", maxWidth: 640,
+        background: "#fff", borderRadius: "24px", width: "100%", maxWidth: 640,
         maxHeight: "85vh", overflowY: "auto",
-        boxShadow: "0 24px 80px rgba(0,0,0,0.2)",
-        animation: "scaleIn 0.2s ease",
+        boxShadow: "0 32px 100px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05) inset",
+        animation: "scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
       }}>
         {/* Modal header */}
         <Box sx={{
-          p: "24px 28px 20px", borderBottom: `1px solid ${C.border}`,
+          p: "28px 32px 24px", borderBottom: `1px solid ${C.border}`,
           display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px",
+          background: "linear-gradient(180deg, #fff 0%, #fafafa 100%)"
         }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <Box sx={{
-              width: 48, height: 48, borderRadius: "12px",
-              background: C.text, display: "flex", alignItems: "center",
+              width: 52, height: 52, borderRadius: "14px",
+              background: "linear-gradient(135deg, #111 0%, #333 100%)",
+              display: "flex", alignItems: "center",
               justifyContent: "center", fontSize: "16px", fontWeight: 700,
-              color: "#fff", fontFamily: "monospace", flexShrink: 0,
+              color: "#fff", letterSpacing: "1px", flexShrink: 0,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
             }}>
               {getInitials(review.employeeName || "?")}
             </Box>
@@ -156,12 +216,12 @@ function ReviewModal({ review, onClose }: { review: EmployeeReview; onClose: () 
           <Box sx={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
             {/* Sentiment badge */}
             <Box sx={{
-              border: `1px solid ${sent.dot}40`, borderRadius: "999px",
-              px: "12px", py: "4px", background: sent.bg,
+              border: `1px solid ${sent.shadow}`, borderRadius: "999px",
+              px: "14px", py: "6px", background: sent.bg,
               display: "flex", alignItems: "center", gap: "6px",
             }}>
-              <Box sx={{ width: 7, height: 7, borderRadius: "50%", background: sent.dot }} />
-              <Typography sx={{ fontSize: "11px", fontWeight: 600, color: sent.color, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              <Box sx={{ width: 8, height: 8, borderRadius: "50%", background: sent.dot, boxShadow: `0 0 8px ${sent.dot}` }} />
+              <Typography sx={{ fontSize: "11px", fontWeight: 700, color: sent.dot, textTransform: "uppercase", letterSpacing: "0.1em" }}>
                 {sent.label}
               </Typography>
             </Box>
@@ -169,11 +229,12 @@ function ReviewModal({ review, onClose }: { review: EmployeeReview; onClose: () 
             <Box
               onClick={onClose}
               sx={{
-                width: 32, height: 32, borderRadius: "8px",
-                background: "#f5f5f5", display: "flex", alignItems: "center",
-                justifyContent: "center", cursor: "pointer", fontSize: "18px",
-                color: C.muted, "&:hover": { background: "#e0e0e0", color: C.text },
-                transition: "background 0.15s",
+                width: 36, height: 36, borderRadius: "10px",
+                background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center",
+                justifyContent: "center", cursor: "pointer", fontSize: "20px",
+                color: C.muted, border: "1px solid transparent",
+                "&:hover": { background: "#fff", color: C.text, borderColor: C.border, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" },
+                transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
               }}
             >
               ×
@@ -182,7 +243,7 @@ function ReviewModal({ review, onClose }: { review: EmployeeReview; onClose: () 
         </Box>
 
         {/* Modal body */}
-        <Box sx={{ p: "24px 28px" }}>
+        <Box sx={{ p: "32px" }}>
           {/* Rating */}
           {review.rating > 0 && (
             <Box sx={{ mb: "20px" }}>
@@ -196,16 +257,47 @@ function ReviewModal({ review, onClose }: { review: EmployeeReview; onClose: () 
           )}
 
           {/* AI Summary */}
-          <Box sx={{ mb: "20px" }}>
-            <Typography sx={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted, mb: "10px" }}>AI Summary</Typography>
+          <Box sx={{ mb: "24px" }}>
+            <Typography sx={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, mb: "12px", fontWeight: 700 }}>AI Summary</Typography>
             <Typography sx={{
-              fontSize: "15px", lineHeight: 1.9, color: C.text,
-              background: sent.bg, borderLeft: `3px solid ${sent.dot}`,
-              pl: "16px", py: "14px", pr: "16px", borderRadius: "0 10px 10px 0",
+              fontSize: "15px", lineHeight: 1.8, color: C.text,
+              background: sent.bg, borderLeft: `4px solid ${sent.dot}`,
+              pl: "20px", py: "18px", pr: "20px", borderRadius: "0 12px 12px 0",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.02) inset"
             }}>
               {review.summary || "No AI summary available for this review."}
             </Typography>
           </Box>
+
+          {/* ── Growth Roadmap ───────────────────────────────────────── */}
+          {hasGrowthPlan && (
+            <Box sx={{ background: "#fafafa", border: `1px solid ${C.border}`, borderRadius: "14px", p: "20px 24px", mb: "20px" }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "8px", mb: "20px" }}>
+                <Typography sx={{ fontSize: "18px" }}>🗺️</Typography>
+                <Typography sx={{ fontWeight: 700, fontSize: "15px", color: C.text }}>
+                  Employee Growth Roadmap
+                </Typography>
+              </Box>
+              <RoadmapSection
+                title="Immediate Actions (0–30 days)"
+                items={gp.immediate_actions ?? []}
+                dotColor="#111111"
+                bg="#fff"
+              />
+              <RoadmapSection
+                title="Short-Term Goals (1–3 months)"
+                items={gp.short_term_goals ?? []}
+                dotColor="#2563eb"
+                bg="#eff6ff"
+              />
+              <RoadmapSection
+                title="Long-Term Development (3–12 months)"
+                items={gp.long_term_development ?? []}
+                dotColor="#7c3aed"
+                bg="#f5f3ff"
+              />
+            </Box>
+          )}
 
           {/* Topics */}
           {review.topics && review.topics.length > 0 && (
@@ -233,29 +325,33 @@ function ReviewModal({ review, onClose }: { review: EmployeeReview; onClose: () 
 /* ── Employee Card (clickable → opens modal) ─────────────────────────────── */
 function EmployeeCard({ review, idx, onOpen }: { review: EmployeeReview; idx: number; onOpen: () => void }) {
   const sent = SENT[review.sentiment?.toLowerCase()] || SENT.neutral;
+  const gp = review.growth_plan || {};
+  const roadmapCount = (gp.immediate_actions?.length ?? 0) + (gp.short_term_goals?.length ?? 0) + (gp.long_term_development?.length ?? 0);
+
   return (
     <Box
       onClick={onOpen}
       sx={{
-        border: `1px solid ${C.border}`, borderRadius: "12px", overflow: "hidden",
+        border: `1px solid ${C.border}`, borderRadius: "16px", overflow: "hidden",
         background: C.surface,
-        display: "flex", alignItems: "center", gap: "14px", p: "14px 18px",
+        display: "flex", alignItems: "center", gap: "16px", p: "16px 20px",
         cursor: "pointer",
-        animation: `slideUp 0.4s ease ${idx * 0.06}s both`,
-        transition: "box-shadow 0.2s, border-color 0.2s, transform 0.15s",
+        animation: `slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.05}s both`,
+        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.01)",
         "&:hover": {
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-          borderColor: C.accent,
-          transform: "translateY(-1px)",
+          boxShadow: "0 12px 32px rgba(0,0,0,0.08)",
+          borderColor: "rgba(0,0,0,0.15)",
+          transform: "translateY(-4px)",
         },
       }}
     >
       {/* Avatar */}
       <Box sx={{
-        width: 40, height: 40, borderRadius: "10px", flexShrink: 0,
-        background: C.text, display: "flex", alignItems: "center",
-        justifyContent: "center", fontSize: "13px", fontWeight: 700,
-        color: "#fff", fontFamily: "monospace",
+        width: 44, height: 44, borderRadius: "12px", flexShrink: 0,
+        background: "linear-gradient(135deg, #111 0%, #444 100%)", display: "flex", alignItems: "center",
+        justifyContent: "center", fontSize: "14px", fontWeight: 700,
+        color: "#fff", letterSpacing: "1px",
       }}>
         {getInitials(review.employeeName || "?")}
       </Box>
@@ -268,6 +364,20 @@ function EmployeeCard({ review, idx, onOpen }: { review: EmployeeReview; idx: nu
         </Typography>
       </Box>
 
+      {/* Growth plan badge */}
+      {roadmapCount > 0 && (
+        <Box sx={{
+          flexShrink: 0, borderRadius: "999px", px: "10px", py: "4px",
+          background: "#f5f3ff", border: "1px solid #7c3aed30",
+          display: "flex", alignItems: "center", gap: "5px",
+        }}>
+          <Typography sx={{ fontSize: "12px" }}>🗺️</Typography>
+          <Typography sx={{ fontSize: "10px", fontWeight: 600, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+            Roadmap
+          </Typography>
+        </Box>
+      )}
+
       {/* Rating */}
       {review.rating > 0 && (
         <Box sx={{ flexShrink: 0, display: "flex", alignItems: "center", gap: "6px" }}>
@@ -279,18 +389,18 @@ function EmployeeCard({ review, idx, onOpen }: { review: EmployeeReview; idx: nu
 
       {/* Sentiment badge */}
       <Box sx={{
-        flexShrink: 0, border: `1px solid ${sent.dot}30`, borderRadius: "999px",
-        px: "10px", py: "4px", background: sent.bg,
-        display: "flex", alignItems: "center", gap: "5px",
+        flexShrink: 0, border: `1px solid ${sent.shadow}`, borderRadius: "999px",
+        px: "12px", py: "5px", background: sent.bg,
+        display: "flex", alignItems: "center", gap: "6px",
       }}>
-        <Box sx={{ width: 6, height: 6, borderRadius: "50%", background: sent.dot, flexShrink: 0 }} />
-        <Typography sx={{ fontSize: "10px", letterSpacing: "0.1em", textTransform: "uppercase", color: sent.color, fontWeight: 600 }}>
+        <Box sx={{ width: 6, height: 6, borderRadius: "50%", background: sent.dot, flexShrink: 0, boxShadow: `0 0 6px ${sent.dot}` }} />
+        <Typography sx={{ fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: sent.dot, fontWeight: 700 }}>
           {sent.label}
         </Typography>
       </Box>
 
       {/* Click hint */}
-      <Typography sx={{ color: C.muted2, fontSize: "16px", flexShrink: 0 }}>›</Typography>
+      <Typography sx={{ color: C.muted2, fontSize: "18px", flexShrink: 0, ml: "4px" }}>→</Typography>
     </Box>
   );
 }
@@ -372,6 +482,7 @@ const InsightsPage: React.FC = () => {
         reviewPeriod: r.reviewPeriod || "",
         timestamp: r.timestamp || "",
         topics: r.topics || [],
+        growth_plan: r.growth_plan,
       }));
     }
     if (data?.recentSummaries && data.recentSummaries.length > 0) {
@@ -422,14 +533,19 @@ const InsightsPage: React.FC = () => {
       y: { grid: { color: "#f0f0f0" }, ticks: { color: C.muted, font: { size: 11 } }, beginAtZero: true },
     },
   };
-  const donutOptions = { cutout: "72%", responsive: true, plugins: { legend: { display: false }, tooltip: tooltipDefaults } };
+  const donutOptions = {
+    cutout: "75%",
+    responsive: true,
+    plugins: { legend: { display: false }, tooltip: tooltipDefaults },
+    elements: { arc: { borderJoinStyle: 'round' as const } }
+  };
 
   const trendData = {
     labels: sentimentTrend.map(s => s.month),
     datasets: [
-      { label: "Positive %", data: sentimentTrend.map(s => s.positive), borderColor: C.pos, backgroundColor: C.pos + "18", fill: true, tension: 0.4, pointRadius: 4 },
-      { label: "Neutral %", data: sentimentTrend.map(s => s.neutral), borderColor: C.neu, backgroundColor: "transparent", fill: false, tension: 0.4, pointRadius: 3, borderDash: [5, 5] },
-      { label: "Negative %", data: sentimentTrend.map(s => s.negative), borderColor: C.neg, backgroundColor: "transparent", fill: false, tension: 0.4, pointRadius: 3 },
+      { label: "Positive %", data: sentimentTrend.map(s => s.positive), borderColor: C.pos, backgroundColor: "url(#posGradient)", fill: true, tension: 0.5, pointRadius: 4, pointBackgroundColor: "#fff", pointBorderWidth: 2 },
+      { label: "Neutral %", data: sentimentTrend.map(s => s.neutral), borderColor: C.neu, backgroundColor: "transparent", fill: false, tension: 0.5, pointRadius: 3, borderDash: [5, 5] },
+      { label: "Negative %", data: sentimentTrend.map(s => s.negative), borderColor: C.neg, backgroundColor: "transparent", fill: false, tension: 0.5, pointRadius: 3 },
     ],
   };
   const trendOptions = {
@@ -466,31 +582,62 @@ const InsightsPage: React.FC = () => {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        @keyframes slideUp  { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes slideUp  { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
         @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
-        @keyframes scaleIn  { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:scale(1); } }
+        @keyframes scaleIn  { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
         @keyframes pulse    { 0%,100% { opacity:1; } 50% { opacity:0.35; } }
+        @keyframes skeleton { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         * { font-family: 'Inter', sans-serif; }
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton 1.5s infinite linear;
+            border-radius: 8px;
+        }
       `}</style>
+
+      {/* SVG filter for chart gradient */}
+      <svg width="0" height="0">
+        <defs>
+          <linearGradient id="posGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={C.pos} stopOpacity={0.4} />
+            <stop offset="100%" stopColor={C.pos} stopOpacity={0.0} />
+          </linearGradient>
+        </defs>
+      </svg>
 
       {/* Review detail modal */}
       {modalReview && <ReviewModal review={modalReview} onClose={() => setModalReview(null)} />}
 
       <Box sx={{ color: C.text }}>
         {/* Page header */}
-        <Box sx={{ mb: "32px", animation: "slideUp 0.4s ease both" }}>
-          <Typography sx={{ fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase", color: C.muted, mb: "8px" }}>
+        <Box sx={{ mb: "40px", animation: "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both" }}>
+          <Typography sx={{ fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase", color: C.muted, mb: "12px", fontWeight: 700 }}>
             HR Dashboard
           </Typography>
-          <Typography variant="h4" sx={{ fontWeight: 800, color: C.text, mb: "6px", letterSpacing: "-0.02em" }}>
+          <Typography variant="h3" sx={{
+            fontWeight: 800, mb: "8px", letterSpacing: "-0.03em",
+            background: "linear-gradient(135deg, #111 0%, #444 100%)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
+          }}>
             WorkPulse Insights
           </Typography>
-          <Typography sx={{ color: C.muted, fontSize: "13px" }}>
-            Organization-wide analytics, department health, and employee review summaries.
+          <Typography sx={{ color: C.muted, fontSize: "15px", maxWidth: "600px" }}>
+            Organization-wide analytics, department health, and employee review summaries in real-time.
           </Typography>
         </Box>
 
-        {loading && <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}><CircularProgress sx={{ color: C.text }} /></Box>}
+        {loading && (
+          <Grid container spacing={2.5}>
+            {[...Array(5)].map((_, i) => (
+              <Grid item xs={6} sm={4} md={2.4} key={i}>
+                <Box className="skeleton" sx={{ height: 110, borderRadius: "16px" }} />
+              </Grid>
+            ))}
+            <Grid item xs={12} md={8}><Box className="skeleton" sx={{ height: 320, borderRadius: "20px" }} /></Grid>
+            <Grid item xs={12} md={4}><Box className="skeleton" sx={{ height: 320, borderRadius: "20px" }} /></Grid>
+          </Grid>
+        )}
         {error && <Alert severity="error" sx={{ mb: 3, borderRadius: "10px" }}>{error}</Alert>}
 
         {data && !loading && (

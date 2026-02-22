@@ -2,23 +2,23 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Alert, Box, CircularProgress, Rating, Stack, Typography } from "@mui/material";
 import { fetchMyReviews, MyReview } from "../api";
 
-/* ── Colour palette (B&W to match App theme) ─────────────────────────────── */
+/* ── Colour palette (classic B&W with premium depth) ─────────────────────────────── */
 const C = {
     surface: "#ffffff",
-    bg: "#f5f5f5",
-    border: "#e0e0e0",
-    text: "#111111",
-    muted: "#666666",
-    muted2: "#cccccc",
-    pos: "#2d6a4f",
-    neu: "#555555",
-    neg: "#b91c1c",
+    bg: "#fafafa",
+    border: "rgba(0,0,0,0.08)",
+    text: "#0a0a0a",
+    muted: "#5c5c5c",
+    muted2: "#e0e0e0",
+    pos: "#10b981",
+    neu: "#6b7280",
+    neg: "#ef4444",
 };
 
-const SENT: Record<string, { color: string; bg: string; label: string; dot: string }> = {
-    positive: { color: C.pos, bg: "#f0fdf4", label: "Positive", dot: "#16a34a" },
-    neutral: { color: C.neu, bg: "#f5f5f5", label: "Neutral", dot: "#888888" },
-    negative: { color: C.neg, bg: "#fef2f2", label: "Negative", dot: "#dc2626" },
+const SENT: Record<string, { color: string; bg: string; label: string; dot: string; shadow: string }> = {
+    positive: { color: C.pos, bg: "rgba(16, 185, 129, 0.08)", label: "Positive", dot: C.pos, shadow: "rgba(16, 185, 129, 0.2)" },
+    neutral: { color: C.neu, bg: "rgba(107, 114, 128, 0.08)", label: "Neutral", dot: C.neu, shadow: "rgba(107, 114, 128, 0.2)" },
+    negative: { color: C.neg, bg: "rgba(239, 68, 68, 0.08)", label: "Negative", dot: C.neg, shadow: "rgba(239, 68, 68, 0.2)" },
 };
 
 function getInitials(name: string) {
@@ -83,32 +83,35 @@ function ReviewModal({ review, onClose }: { review: MyReview; onClose: () => voi
             onClick={handleBackdrop}
             sx={{
                 position: "fixed", inset: 0, zIndex: 9999,
-                background: "rgba(0,0,0,0.4)",
+                background: "rgba(0,0,0,0.3)", backdropFilter: "blur(6px)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                p: "24px", animation: "fadeIn 0.18s ease",
+                p: "24px", animation: "fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
             }}
         >
             <Box sx={{
-                background: "#fff", borderRadius: "18px",
+                background: "#fff", borderRadius: "24px",
                 width: "100%", maxWidth: 680,
                 maxHeight: "88vh", overflowY: "auto",
-                boxShadow: "0 24px 80px rgba(0,0,0,0.2)",
-                animation: "scaleIn 0.2s ease",
+                boxShadow: "0 32px 100px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05) inset",
+                animation: "scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
             }}>
 
                 {/* Modal header */}
                 <Box sx={{
-                    p: "24px 28px 20px", borderBottom: `1px solid ${C.border}`,
+                    p: "28px 32px 24px", borderBottom: `1px solid ${C.border}`,
                     display: "flex", alignItems: "flex-start",
                     justifyContent: "space-between", gap: "16px",
-                    position: "sticky", top: 0, background: "#fff", zIndex: 1,
-                    borderRadius: "18px 18px 0 0",
+                    position: "sticky", top: 0,
+                    background: "linear-gradient(180deg, #fff 0%, #fafafa 100%)", zIndex: 1,
+                    borderRadius: "24px 24px 0 0",
                 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
                         <Box sx={{
-                            width: 48, height: 48, borderRadius: "12px", background: C.text,
+                            width: 52, height: 52, borderRadius: "14px",
+                            background: "linear-gradient(135deg, #111 0%, #333 100%)",
                             display: "flex", alignItems: "center", justifyContent: "center",
-                            fontSize: "16px", fontWeight: 700, color: "#fff", fontFamily: "monospace", flexShrink: 0,
+                            fontSize: "16px", fontWeight: 700, color: "#fff",
+                            letterSpacing: "1px", flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
                         }}>
                             {getInitials(review.employeeName || "?")}
                         </Box>
@@ -121,22 +124,23 @@ function ReviewModal({ review, onClose }: { review: MyReview; onClose: () => voi
                             </Typography>
                         </Box>
                     </Box>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
                         <Box sx={{
-                            border: `1px solid ${sent.dot}40`, borderRadius: "999px",
-                            px: "12px", py: "4px", background: sent.bg,
+                            border: `1px solid ${sent.shadow}`, borderRadius: "999px",
+                            px: "14px", py: "6px", background: sent.bg,
                             display: "flex", alignItems: "center", gap: "6px",
                         }}>
-                            <Box sx={{ width: 7, height: 7, borderRadius: "50%", background: sent.dot }} />
-                            <Typography sx={{ fontSize: "11px", fontWeight: 600, color: sent.color, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                            <Box sx={{ width: 8, height: 8, borderRadius: "50%", background: sent.dot, boxShadow: `0 0 8px ${sent.dot}` }} />
+                            <Typography sx={{ fontSize: "11px", fontWeight: 700, color: sent.dot, textTransform: "uppercase", letterSpacing: "0.1em" }}>
                                 {sent.label}
                             </Typography>
                         </Box>
                         <Box onClick={onClose} sx={{
-                            width: 32, height: 32, borderRadius: "8px", background: "#f5f5f5",
+                            width: 36, height: 36, borderRadius: "10px", background: "rgba(0,0,0,0.04)",
                             display: "flex", alignItems: "center", justifyContent: "center",
-                            cursor: "pointer", fontSize: "20px", color: C.muted, lineHeight: 1,
-                            "&:hover": { background: "#e0e0e0", color: C.text }, transition: "background 0.15s",
+                            cursor: "pointer", fontSize: "20px", color: C.muted, border: "1px solid transparent",
+                            "&:hover": { background: "#fff", color: C.text, borderColor: C.border, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" },
+                            transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                         }}>
                             ×
                         </Box>
@@ -144,19 +148,19 @@ function ReviewModal({ review, onClose }: { review: MyReview; onClose: () => voi
                 </Box>
 
                 {/* Modal body */}
-                <Box sx={{ p: "24px 28px" }}>
+                <Box sx={{ p: "32px" }}>
 
                     {/* Priority badge */}
                     {review.priority_level && (
-                        <Box sx={{ mb: "20px" }}>
+                        <Box sx={{ mb: "24px" }}>
                             <Box sx={{
                                 display: "inline-flex", alignItems: "center", gap: "6px",
-                                border: `1px solid ${review.priority_level === "high" ? "#dc2626" : C.border}`,
-                                borderRadius: "999px", px: "12px", py: "5px",
-                                background: review.priority_level === "high" ? "#fef2f2" : "#f5f5f5",
+                                border: `1px solid ${review.priority_level === "high" ? "rgba(239, 68, 68, 0.2)" : C.border}`,
+                                borderRadius: "999px", px: "14px", py: "6px",
+                                background: review.priority_level === "high" ? "rgba(239, 68, 68, 0.08)" : "#fafafa",
                             }}>
-                                <Box sx={{ width: 6, height: 6, borderRadius: "50%", background: review.priority_level === "high" ? "#dc2626" : C.muted }} />
-                                <Typography sx={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: review.priority_level === "high" ? "#b91c1c" : C.muted }}>
+                                <Box sx={{ width: 6, height: 6, borderRadius: "50%", background: review.priority_level === "high" ? C.neg : C.muted }} />
+                                <Typography sx={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: review.priority_level === "high" ? C.neg : C.muted }}>
                                     {review.priority_level} priority
                                 </Typography>
                             </Box>
@@ -165,8 +169,8 @@ function ReviewModal({ review, onClose }: { review: MyReview; onClose: () => voi
 
                     {/* Rating */}
                     {review.rating > 0 && (
-                        <Box sx={{ mb: "20px" }}>
-                            <Typography sx={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted, mb: "8px", fontWeight: 700 }}>Rating</Typography>
+                        <Box sx={{ mb: "24px" }}>
+                            <Typography sx={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, mb: "10px", fontWeight: 700 }}>Rating</Typography>
                             <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
                                 <Rating value={review.rating} readOnly
                                     sx={{ "& .MuiRating-iconFilled": { color: C.text }, "& .MuiRating-iconEmpty": { color: C.muted2 } }} />
@@ -176,12 +180,13 @@ function ReviewModal({ review, onClose }: { review: MyReview; onClose: () => voi
                     )}
 
                     {/* AI Summary */}
-                    <Box sx={{ mb: "24px" }}>
-                        <Typography sx={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted, mb: "10px", fontWeight: 700 }}>AI Summary</Typography>
+                    <Box sx={{ mb: "28px" }}>
+                        <Typography sx={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, mb: "12px", fontWeight: 700 }}>AI Summary</Typography>
                         <Typography sx={{
-                            fontSize: "14px", lineHeight: 1.9, color: C.text,
-                            background: sent.bg, borderLeft: `3px solid ${sent.dot}`,
-                            pl: "16px", py: "14px", pr: "16px", borderRadius: "0 10px 10px 0",
+                            fontSize: "15px", lineHeight: 1.8, color: C.text,
+                            background: sent.bg, borderLeft: `4px solid ${sent.dot}`,
+                            pl: "20px", py: "18px", pr: "20px", borderRadius: "0 12px 12px 0",
+                            boxShadow: "0 2px 10px rgba(0,0,0,0.02) inset"
                         }}>
                             {review.summary || "No AI summary available for this review."}
                         </Typography>
@@ -221,10 +226,10 @@ function ReviewModal({ review, onClose }: { review: MyReview; onClose: () => voi
 
                     {/* ── Growth Roadmap ───────────────────────────────────────── */}
                     {hasGrowthPlan && (
-                        <Box sx={{ background: "#fafafa", border: `1px solid ${C.border}`, borderRadius: "14px", p: "20px 24px", mb: "8px" }}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: "8px", mb: "20px" }}>
-                                <Typography sx={{ fontSize: "18px" }}>🗺️</Typography>
-                                <Typography sx={{ fontWeight: 700, fontSize: "15px", color: C.text }}>
+                        <Box sx={{ background: "#fafafa", border: `1px solid ${C.border}`, borderRadius: "14px", p: "24px 28px", mb: "24px" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: "10px", mb: "24px" }}>
+                                <Typography sx={{ fontSize: "20px" }}>🗺️</Typography>
+                                <Typography sx={{ fontWeight: 800, fontSize: "16px", color: C.text }}>
                                     Your Growth Roadmap
                                 </Typography>
                             </Box>
@@ -251,11 +256,11 @@ function ReviewModal({ review, onClose }: { review: MyReview; onClose: () => voi
 
                     {/* Topics */}
                     {review.topics && review.topics.length > 0 && (
-                        <Box sx={{ mt: "20px" }}>
-                            <Typography sx={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: C.muted, mb: "10px", fontWeight: 700 }}>Topics</Typography>
+                        <Box sx={{ mt: "24px" }}>
+                            <Typography sx={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.muted, mb: "12px", fontWeight: 700 }}>Topics</Typography>
                             <Box sx={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                                 {review.topics.map((t, i) => (
-                                    <Box key={i} sx={{ border: `1px solid ${C.border}`, borderRadius: "999px", px: "12px", py: "4px", fontSize: "12px", color: C.text, background: "#fafafa" }}>
+                                    <Box key={i} sx={{ border: `1px solid ${C.border}`, borderRadius: "999px", px: "14px", py: "6px", fontSize: "13px", color: C.text, background: "#fafafa" }}>
                                         {t}
                                     </Box>
                                 ))}
@@ -278,19 +283,24 @@ function ReviewCard({ review, idx, onOpen }: { review: MyReview; idx: number; on
         <Box
             onClick={onOpen}
             sx={{
-                border: `1px solid ${C.border}`, borderRadius: "12px",
+                border: `1px solid ${C.border}`, borderRadius: "16px",
                 background: C.surface, display: "flex", alignItems: "center",
-                gap: "14px", p: "14px 18px", cursor: "pointer",
-                animation: `slideUp 0.4s ease ${idx * 0.06}s both`,
-                transition: "box-shadow 0.2s, border-color 0.2s, transform 0.15s",
-                "&:hover": { boxShadow: "0 4px 20px rgba(0,0,0,0.1)", borderColor: C.text, transform: "translateY(-1px)" },
+                gap: "16px", p: "16px 20px", cursor: "pointer",
+                animation: `slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.05}s both`,
+                transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.01)",
+                "&:hover": {
+                    boxShadow: "0 12px 32px rgba(0,0,0,0.08)",
+                    borderColor: "rgba(0,0,0,0.15)",
+                    transform: "translateY(-4px)"
+                },
             }}
         >
             {/* Avatar */}
             <Box sx={{
-                width: 40, height: 40, borderRadius: "10px", flexShrink: 0,
-                background: C.text, display: "flex", alignItems: "center",
-                justifyContent: "center", fontSize: "13px", fontWeight: 700, color: "#fff", fontFamily: "monospace",
+                width: 44, height: 44, borderRadius: "12px", flexShrink: 0,
+                background: "linear-gradient(135deg, #111 0%, #444 100%)", display: "flex", alignItems: "center",
+                justifyContent: "center", fontSize: "14px", fontWeight: 700, color: "#fff", letterSpacing: "1px"
             }}>
                 {getInitials(review.employeeName || "?")}
             </Box>
@@ -330,17 +340,17 @@ function ReviewCard({ review, idx, onOpen }: { review: MyReview; idx: number; on
 
             {/* Sentiment */}
             <Box sx={{
-                flexShrink: 0, border: `1px solid ${sent.dot}30`, borderRadius: "999px",
-                px: "10px", py: "4px", background: sent.bg,
-                display: "flex", alignItems: "center", gap: "5px",
+                flexShrink: 0, border: `1px solid ${sent.shadow}`, borderRadius: "999px",
+                px: "12px", py: "5px", background: sent.bg,
+                display: "flex", alignItems: "center", gap: "6px",
             }}>
-                <Box sx={{ width: 6, height: 6, borderRadius: "50%", background: sent.dot, flexShrink: 0 }} />
-                <Typography sx={{ fontSize: "10px", fontWeight: 600, color: sent.color, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                <Box sx={{ width: 6, height: 6, borderRadius: "50%", background: sent.dot, flexShrink: 0, boxShadow: `0 0 6px ${sent.dot}` }} />
+                <Typography sx={{ fontSize: "10px", fontWeight: 700, color: sent.dot, textTransform: "uppercase", letterSpacing: "0.12em" }}>
                     {sent.label}
                 </Typography>
             </Box>
 
-            <Typography sx={{ color: C.muted2, fontSize: "16px", flexShrink: 0 }}>›</Typography>
+            <Typography sx={{ color: C.muted2, fontSize: "18px", flexShrink: 0, ml: "4px" }}>→</Typography>
         </Box>
     );
 }
@@ -369,10 +379,17 @@ const MyReviewsPage: React.FC = () => {
         <>
             <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        @keyframes slideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes slideUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
         @keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
-        @keyframes scaleIn { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:scale(1); } }
+        @keyframes scaleIn { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
+        @keyframes skeleton { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         * { font-family: 'Inter', sans-serif; }
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton 1.5s infinite linear;
+            border-radius: 8px;
+        }
       `}</style>
 
             {modal && <ReviewModal review={modal} onClose={() => setModal(null)} />}
@@ -380,27 +397,43 @@ const MyReviewsPage: React.FC = () => {
             <Box sx={{ color: C.text, maxWidth: 700, mx: "auto" }}>
 
                 {/* Page header */}
-                <Box sx={{ mb: "32px", animation: "slideUp 0.4s ease both" }}>
-                    <Typography sx={{ fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase", color: C.muted, mb: "8px" }}>
+                <Box sx={{ mb: "40px", animation: "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both" }}>
+                    <Typography sx={{ fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase", color: C.muted, mb: "12px", fontWeight: 700 }}>
                         My Workspace
                     </Typography>
-                    <Typography variant="h4" sx={{ fontWeight: 800, color: C.text, mb: "6px", letterSpacing: "-0.02em" }}>
+                    <Typography variant="h3" sx={{
+                        fontWeight: 800, mb: "8px", letterSpacing: "-0.03em",
+                        background: "linear-gradient(135deg, #111 0%, #444 100%)",
+                        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent"
+                    }}>
                         Feedback &amp; Growth Roadmap
                     </Typography>
-                    <Typography sx={{ color: C.muted, fontSize: "13px" }}>
+                    <Typography sx={{ color: C.muted, fontSize: "15px" }}>
                         Click any review card to see your full AI summary, strengths, improvement areas, and personalised growth roadmap.
                     </Typography>
                 </Box>
 
-                {loading && <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}><CircularProgress sx={{ color: C.text }} /></Box>}
+                {loading && (
+                    <Box sx={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "20px", p: "24px" }}>
+                        <Box sx={{ height: 20, width: 140, mb: "24px", borderRadius: "4px" }} className="skeleton" />
+                        <Stack spacing={2}>
+                            {[...Array(3)].map((_, i) => <Box key={i} className="skeleton" sx={{ height: 76, borderRadius: "16px" }} />)}
+                        </Stack>
+                    </Box>
+                )}
                 {error && <Alert severity="error" sx={{ mb: 3, borderRadius: "10px" }}>{error}</Alert>}
 
                 {data && !loading && (
-                    <Box sx={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "14px", p: "24px", animation: "slideUp 0.5s ease 0.1s both" }}>
-                        <Typography sx={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700, color: C.muted, mb: "12px" }}>
+                    <Box sx={{
+                        background: C.surface, border: `1px solid ${C.border}`,
+                        borderRadius: "20px", p: "28px",
+                        animation: "slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both",
+                        boxShadow: "0 4px 24px rgba(0,0,0,0.02)"
+                    }}>
+                        <Typography sx={{ fontSize: "12px", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700, color: C.muted, mb: "14px" }}>
                             Reviews about you ({reviews.length})
                         </Typography>
-                        <Box sx={{ height: "1px", background: C.border, mb: "20px" }} />
+                        <Box sx={{ height: "1px", background: "linear-gradient(90deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0) 100%)", mb: "24px" }} />
 
                         {reviews.length === 0
                             ? <Typography sx={{ color: C.muted, fontSize: "13px" }}>No reviews found about you yet.</Typography>
