@@ -27,7 +27,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FRONTEND_DIR="$SCRIPT_DIR/frontend"
 INFRA_DIR="$SCRIPT_DIR/infra"
 
-echo -e "${BOLD}${BLUE}cap-project — Local Dev Server${NC}"
+echo -e "${BOLD}${BLUE}WorkPulse — Local Dev Server${NC}"
 echo ""
 
 # Try to get API URL from Terraform output

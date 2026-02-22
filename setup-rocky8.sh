@@ -1,7 +1,7 @@
 #!/bin/bash
 ###############################################################################
 # setup-rocky8.sh — Full Dev & Deployment Setup for Rocky Linux 8
-# Project: cap-project (Smart Talent Insight Hub)
+# Project: WorkPulse (Smart Talent Insight Hub)
 #
 # Run this script as a regular user with sudo access:
 #   chmod +x setup-rocky8.sh
@@ -126,13 +126,19 @@ if command -v aws &>/dev/null; then
     warn "AWS CLI already installed: $(aws --version)"
 else
     info "Downloading AWS CLI v2..."
+    ARCH=$(uname -m)   # x86_64 or aarch64
+    if [ "$ARCH" = "aarch64" ]; then
+        AWS_CLI_URL="https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip"
+    else
+        AWS_CLI_URL="https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    fi
     cd /tmp
-    curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    curl -fsSL "$AWS_CLI_URL" -o "awscliv2.zip"
     unzip -q awscliv2.zip
     sudo ./aws/install
     rm -rf /tmp/aws /tmp/awscliv2.zip
     cd ~
-fi
+    fi
 
 log "AWS CLI ready: $(aws --version)"
 
